@@ -9,6 +9,9 @@ import ks13
 import ksh3
 import hierarquia
 
+def parse(ks13_path, ksh3_path):
+    pass
+
 if __name__ == '__main__':
     import pandas as pd
     pd.set_option('display.width', 1000)

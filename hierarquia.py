@@ -36,7 +36,13 @@ def transform_hierarquia(ks13, ksh3):
                        'responsavel': 'descricao'},
               inplace=True)
 
-    df.to_excel('hierarquia depois.xlsx')
+    # Neste momento, o dataframe df contém apenas as hierarquias que tem
+    # um centro de custo associado.
+    # Então, precisamos concatena o restante das hierarquias ao dataframe.
+    hierarquias = ksh3.query('hierarquia not in @ks13.hierarquia')
+    df = pd.concat([df, hierarquias], ignore_index=True)
+
+    return df
 
 
 def preencher_nivel_responsavel(row):
