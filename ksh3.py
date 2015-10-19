@@ -52,25 +52,27 @@ class ETL(object):
         # Reseta index para ficar com um número sequencial
         self.df.reset_index(drop=True, inplace=True)
 
-        # Renomeia hierarquias conforme de -> para no arquivo de configuração
+        # Renomeia hierarquias conforme de->para no arquivo de configuração
         for k, v in self.config['Hierarquia de centros de custo'].items():
             self.df.loc[self.df.hierarquia == k, 'descricao'] = v
 
         # Denormaliza hierarquia
-        for i in self.df.index[:5]:
-            level = self.df.loc[i, 'nivel']
+        level_1 = None
+        for i in self.df.index:
+            level, descricao = self.df.loc[i, ['nivel', 'descricao']]
+
+            if level == 1 and descricao != level_1:
+                level_1 = descricao
+                log.info('    > Denormalizando {!r}'.format(descricao))
 
             field_name = 'nivel_{!s}'.format(level)
             self.df.loc[i, field_name] = self.df.loc[i, 'hierarquia']
 
-            print(self.df.loc[i].shift(1))
-
-            # if i > 1:
-            #     for l in range(1, level):
-            #         field_name = 'nivel_{!s}'.format(l)
-                    # self.df.loc[i, field_name] = self.df.shift(1)['hierarquia']
-
-        print(self.df[:5])
+            if level > 1:
+                for l in range(1, level):
+                    field_name = 'nivel_{!s}'.format(l)
+                    self.df.loc[i, field_name] =\
+                        self.df['hierarquia'].shift(1).ix[i]
 
     def quality_check(self):
         pass

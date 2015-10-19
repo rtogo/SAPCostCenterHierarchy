@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+
+import logging
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
+
 import os
 import ks13
 import ksh3
