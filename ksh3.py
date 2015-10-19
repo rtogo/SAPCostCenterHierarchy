@@ -59,20 +59,22 @@ class ETL(object):
         # Denormaliza hierarquia
         level_1 = None
         for i in self.df.index:
-            level, descricao = self.df.loc[i, ['nivel', 'descricao']]
+            row = self.df.loc[i]
 
-            if level == 1 and descricao != level_1:
-                level_1 = descricao
-                log.info('    > Denormalizando {!r}'.format(descricao))
+            if row['nivel'] == 1 and row['descricao'] != level_1:
+                level_1 = row['descricao']
+                log.info('    > Denormalizando {!r}'.format(row['descricao']))
 
-            field_name = 'nivel_{!s}'.format(level)
-            self.df.loc[i, field_name] = self.df.loc[i, 'hierarquia']
+            field_name = 'nivel_{!s}'.format(row['nivel'])
+            self.df.loc[i, field_name] = row['hierarquia']
 
-            if level > 1:
-                for l in range(1, level):
+            if row['nivel'] > 1:
+                for l in range(1, row['nivel']):
                     field_name = 'nivel_{!s}'.format(l)
                     self.df.loc[i, field_name] =\
-                        self.df['hierarquia'].shift(1).ix[i]
+                        self.df[field_name].shift(1).ix[i]
+
+        print(self.df.head(50))
 
     def quality_check(self):
         pass
