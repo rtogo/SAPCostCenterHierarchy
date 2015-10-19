@@ -65,14 +65,19 @@ class ETL(object):
                 level_1 = row['descricao']
                 log.info('    > Denormalizando {!r}'.format(row['descricao']))
 
-            field_name = 'nivel_{!s}'.format(row['nivel'])
-            self.df.loc[i, field_name] = row['hierarquia']
+            nivel_hierarquia = 'nivel_{!s}_hierarquia'.format(row['nivel'])
+            nivel_descricao = 'nivel_{!s}_descricao'.format(row['nivel'])
+            self.df.loc[i, nivel_hierarquia] = row['hierarquia']
+            self.df.loc[i, nivel_descricao] = row['descricao']
 
             if row['nivel'] > 1:
                 for l in range(1, row['nivel']):
-                    field_name = 'nivel_{!s}'.format(l)
-                    self.df.loc[i, field_name] =\
-                        self.df[field_name].shift(1).ix[i]
+                    nivel_hierarquia = 'nivel_{!s}_hierarquia'.format(l)
+                    nivel_descricao = 'nivel_{!s}_descricao'.format(l)
+                    self.df.loc[i, nivel_hierarquia] =\
+                        self.df[nivel_hierarquia].shift(1).ix[i]
+                    self.df.loc[i, nivel_descricao] =\
+                        self.df[nivel_descricao].shift(1).ix[i]
 
         print(self.df.head(50))
 
