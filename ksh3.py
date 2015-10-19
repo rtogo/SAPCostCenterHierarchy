@@ -10,13 +10,11 @@ import yaml
 
 
 class ETL(object):
-    def __init__(self, path, config='config.yml'):
+    def __init__(self, path, config_filename='de-para.yml'):
         self.path = path
+        self.config_filename = config_filename
         self.df = pd.DataFrame()
         self.profile = pd.DataFrame()
-
-        with open(config, encoding='utf-8') as stream:
-            self.config = yaml.load(stream)
 
         self.extract()
         self.transform()
@@ -27,6 +25,9 @@ class ETL(object):
                               header=0, dtype=str)
 
         self.df.columns = ['SAP']
+
+        with open(self.config_filename, encoding='utf-8') as stream:
+            self.config = yaml.load(stream)
 
     def transform(self):
         # Extrai colunas usando regex
@@ -58,13 +59,20 @@ class ETL(object):
 
         # Denormaliza hierarquia
         level_1 = None
+        level_2 = None
+
         for i in self.df.index:
             row = self.df.loc[i].copy()
             last_row = self.df.shift(1).ix[i].copy()
 
             if row['nivel'] == 1 and row['descricao'] != level_1:
                 level_1 = row['descricao']
-                log.info('    > Denormalizando {!r}'.format(row['descricao']))
+                # log.info('    > Lendo hierarquia {!r}'.format(row['descricao']))
+
+            if row['nivel'] == 2 and row['descricao'] != level_2:
+                level_2 = row['descricao']
+                log.info('    > Lendo hierarquia {!s} :: {!s}'.
+                         format(level_1, level_2))
 
             nivel_hierarquia = 'nivel_{!s}_hierarquia'.format(row['nivel'])
             nivel_descricao = 'nivel_{!s}_descricao'.format(row['nivel'])
