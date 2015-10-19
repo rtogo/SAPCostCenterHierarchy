@@ -59,7 +59,8 @@ class ETL(object):
         # Denormaliza hierarquia
         level_1 = None
         for i in self.df.index:
-            row = self.df.loc[i]
+            row = self.df.loc[i].copy()
+            last_row = self.df.shift(1).ix[i].copy()
 
             if row['nivel'] == 1 and row['descricao'] != level_1:
                 level_1 = row['descricao']
@@ -70,16 +71,12 @@ class ETL(object):
             self.df.loc[i, nivel_hierarquia] = row['hierarquia']
             self.df.loc[i, nivel_descricao] = row['descricao']
 
-            if row['nivel'] > 1:
-                for l in range(1, row['nivel']):
-                    nivel_hierarquia = 'nivel_{!s}_hierarquia'.format(l)
-                    nivel_descricao = 'nivel_{!s}_descricao'.format(l)
-                    self.df.loc[i, nivel_hierarquia] =\
-                        self.df[nivel_hierarquia].shift(1).ix[i]
-                    self.df.loc[i, nivel_descricao] =\
-                        self.df[nivel_descricao].shift(1).ix[i]
+            for l in range(1, row['nivel']):
+                nivel_hierarquia = 'nivel_{!s}_hierarquia'.format(l)
+                nivel_descricao = 'nivel_{!s}_descricao'.format(l)
 
-        print(self.df.head(50))
+                self.df.loc[i, nivel_hierarquia] = last_row[nivel_hierarquia]
+                self.df.loc[i, nivel_descricao] = last_row[nivel_descricao]
 
     def quality_check(self):
         pass
