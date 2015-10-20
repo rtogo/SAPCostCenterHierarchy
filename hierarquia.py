@@ -6,18 +6,18 @@ log = logging.getLogger(__name__)
 import pandas as pd
 
 
-def transform_hierarquia(ks13, ksh3):
+def transform_hierarquia(df_ks13, df_ksh3):
     log.info('Convertendo hierarquia de centros de custo')
 
     # Remove os centros de custo afim de manter somente as hierarquias
     # no dataframe
-    ksh3 = ksh3.query('hierarquia not in @ks13.centro_custo')
+    df_ksh3 = df_ksh3.query('@df_ksh3.hierarquia not in @df_ks13.centro_custo')
 
     # Mantém somente os centros de custo que possuem hierarquia válida
-    ks13 = ks13.query('hierarquia in @ksh3.hierarquia')
+    df_ks13 = df_ks13.query('@df_ks13.hierarquia in @df_ksh3.hierarquia')
 
     # Join dos dois dataframes
-    df = ksh3.merge(ks13,
+    df = df_ksh3.merge(df_ks13,
                     left_on='hierarquia',
                     right_on='hierarquia',
                     how='inner')
@@ -39,8 +39,9 @@ def transform_hierarquia(ks13, ksh3):
     # Neste momento, o dataframe df contém apenas as hierarquias que tem
     # um centro de custo associado.
     # Então, precisamos concatena o restante das hierarquias ao dataframe.
-    hierarquias = ksh3.query('hierarquia not in @ks13.hierarquia')
-    df = pd.concat([df, hierarquias], ignore_index=True)
+    df_hierarquias = df_ksh3.query('@df_ksh3.hierarquia '
+                                   'not in @df_ks13.hierarquia')
+    df = pd.concat([df, df_hierarquias], ignore_index=True)
 
     return df
 
