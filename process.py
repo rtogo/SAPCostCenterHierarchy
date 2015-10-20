@@ -7,12 +7,12 @@ log = logging.getLogger(__name__)
 import os
 import sqlalchemy
 
-import ks13
-import ksh3
-import hierarquia
+from . import ks13
+from . import ksh3
+from . import hierarquia
 
 
-def parse(source_ks13, source_ksh3, engine):
+def run(source_ks13, source_ksh3, engine):
     df_ks13 = ks13.parse(source_ks13)
     df_ksh3 = ksh3.parse(source_ksh3)
     df_hierarquia = hierarquia.transform_hierarquia(df_ks13, df_ksh3)
@@ -33,4 +33,4 @@ if __name__ == '__main__':
     ks13_filename = os.path.join(os.path.dirname(__file__), 'ks13.txt')
     ksh3_filename = os.path.join(os.path.dirname(__file__), 'ksh3.txt')
 
-    parse(ks13_filename, ksh3_filename, engine)
+    run(ks13_filename, ksh3_filename, engine)
