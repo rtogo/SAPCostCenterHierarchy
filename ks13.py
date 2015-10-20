@@ -19,7 +19,7 @@ class ETL(object):
 
     def extract(self):
         self.df = pd.read_csv(self.path, encoding='latin-1', sep='\t',
-                              header=4, dtype=str)
+                              header=3, dtype=str)
 
         # Remove the un-interesting columns
         columns = ['Centro cst', 'Responsável', 'Descrição',
