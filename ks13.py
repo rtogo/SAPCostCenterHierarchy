@@ -52,10 +52,8 @@ class ETL(object):
             raise ValueError('Hierarquia em branco')
 
 
-def parse(data_sources):
+def parse(path):
     log.info('Importando ks13')
-    path = os.path.join(data_sources['ks13']['pasta'],
-                        data_sources['ks13']['arquivo'])
     parser = ETL(path)
 
     return parser.df

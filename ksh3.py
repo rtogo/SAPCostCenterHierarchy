@@ -90,10 +90,8 @@ class ETL(object):
         pass
 
 
-def parse(data_sources):
+def parse(path):
     log.info('Importando ksh3')
-    path = os.path.join(data_sources['ksh3']['pasta'],
-                        data_sources['ksh3']['arquivo'])
     parser = ETL(path)
 
     return parser.df
